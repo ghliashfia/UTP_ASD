@@ -1,0 +1,162 @@
+import java.util.Scanner;
+
+class Node {
+    String namaBarang;
+    int berat;
+    Node next, prev;
+
+    Node(String namaBarang, int berat) {
+        this.namaBarang = namaBarang;
+        this.berat = berat;
+        this.next = null;
+        this.prev = null;
+    }
+}
+
+class Kereta {
+    Node head, tail;
+
+    void tambahBelakang(String namaBarang, int berat) {
+        Node newNode = new Node(namaBarang, berat);
+        if (head == null) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+        }
+    }
+
+    void tambahDepan(String namaBarang, int berat) {
+        Node newNode = new Node(namaBarang, berat);
+        if (head == null) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            newNode.next = head;
+            head.prev = newNode;
+            head = newNode;
+        }
+    }
+
+    boolean lepasGerbong(String namaBarang) {
+        if (head == null) return false;
+
+        Node current = head;
+        while (current != null && !current.namaBarang.equals(namaBarang)) {
+            current = current.next;
+        }
+
+        if (current == null) return false;
+
+        if (current == head) {
+            head = head.next;
+            if (head != null) {
+                head.prev = null;
+            } else {
+                tail = null;
+            }
+        } 
+  
+        else if (current == tail) {
+            tail = tail.prev;
+            if (tail != null) {
+                tail.next = null;
+            } else {
+                head = null;
+            }
+        } 
+  
+        else {
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+        }
+
+        return true;
+    }
+
+    void cetakForward() {
+        if (head == null) {
+            System.out.println("Kereta Kosong");
+            return;
+        }
+
+        Node current = head;
+        while (current != null) {
+            System.out.print("[" + current.namaBarang + ":" + current.berat + "kg]");
+            if (current.next != null) {
+                System.out.print(" <-> ");
+            }
+            current = current.next;
+        }
+        System.out.println();
+    }
+
+    void cetakBackward() {
+        if (tail == null) {
+            System.out.println("Kereta Kosong");
+            return;
+        }
+
+        Node current = tail;
+        while (current != null) {
+            System.out.print("[" + current.namaBarang + ":" + current.berat + "kg]");
+            if (current.prev != null) {
+                System.out.print(" <-> ");
+            }
+            current = current.prev;
+        }
+        System.out.println();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Kereta kereta = new Kereta();
+
+        if (!sc.hasNextInt()) {
+            sc.close();
+            return;
+        }
+
+        int Q = sc.nextInt();
+
+        for (int i = 0; i < Q; i++) {
+            if (!sc.hasNextInt()) break;
+            int cmd = sc.nextInt();
+
+            switch (cmd) {
+                case 1:
+                    String barang1 = sc.next();
+                    int berat1 = sc.nextInt();
+                    kereta.tambahBelakang(barang1, berat1);
+                    break;
+
+                case 2:
+                    String barang2 = sc.next();
+                    int berat2 = sc.nextInt();
+                    kereta.tambahDepan(barang2, berat2);
+                    break;
+
+                case 3:
+                    String namaHapus = sc.next();
+                    if (!kereta.lepasGerbong(namaHapus)) {
+                        System.out.println("Gerbong " + namaHapus + " tidak ditemukan");
+                    }
+                    break;
+
+                case 4:
+                    kereta.cetakForward();
+                    break;
+
+                case 5:
+                    kereta.cetakBackward();
+                    break;
+            }
+        }
+
+        sc.close();
+    }
+}
